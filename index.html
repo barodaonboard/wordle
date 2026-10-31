@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="only light">
+
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js?v=9" defer></script>
+  <title>BOB Wordle</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟩</text></svg>">
+</head>
+
+<body>
+  <div class="alert-container" data-alert-container></div>
+
+  <header class="game-header">
+    <div class="header-top">
+      <button class="icon-btn" id="info-modal-btn" title="Points System">
+        <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 -960 960 960" width="28"
+          fill="var(--color-tone-1)">
+          <path
+            d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+        </svg>
+      </button>
+      <h1 class="game-title">BOB Wordle</h1>
+      <div class="live-timer" id="live-timer">⏱️ <span id="live-timer-value">0:00</span></div>
+    </div>
+    <h3 class="game-byline">Guess the word. Think boardgames, mechanics, characters, and everything BoB!
+    <a class="reminder-btn">
+      Only 1️⃣ attempt per day!!<br><span data-days-remaining></span>
+    </a>
+    <div id="past-puzzle-indicator" class="past-puzzle-indicator hide">
+      Playing: <span id="past-puzzle-date"></span>
+      <a href="." class="return-link">Return to Today</a>
+    </div>
+  </header>
+
+  <div id="info-modal" class="modal hide">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Points System <span style="color: var(--color-correct); font-size: 0.75em;">(NEW)</span></h2>
+        <button class="close-btn" id="close-info">&times;</button>
+      </div>
+      <div class="info-text">
+        <p>Your score starts at <strong>1000</strong> and drops based on your performance:</p>
+        <ul style="text-align: left; line-height: 1.6; margin-bottom: 20px;">
+          <li><strong>minus 100 pts</strong> per guess <i>(No deduction on 1st guess)</i></li>
+          <li><strong>minus 150 pts</strong> for using a hint <i>(available after 2 guesses)</i></li>
+          <li><strong>minus 1 pt</strong> per second taken</li>
+        </ul>
+        <p style="color: var(--color-present);">Example: 3 guesses, no hints, 45 seconds = <strong>755 pts</strong></p>
+        <button class="reminder-btn" id="start-game-btn" style="margin-top: 15px; width: 100%;">Start Playing</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="archive-modal" class="modal hide">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Past Wordles</h2>
+        <button class="close-btn" id="close-archive">&times;</button>
+      </div>
+      <div class="archive-list" id="archive-list">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div data-guess-grid class="guess-grid">
+  </div>
+  <div class="hint-area">
+    <button class="hint-btn" id="hint-btn" data-hint-btn>💡 Hint (-150 pts)</button>
+    <div class="hint-display hide" id="hint-display" data-hint-display></div>
+  </div>
+  <div class="footer-credit">
+    made with <span class="heart">♥</span> by <a href="https://www.linkedin.com/in/anikxtsingh/" target="_blank"
+      rel="noopener noreferrer">anikxtsingh</a>
+  </div>
+  <div data-keyboard class="keyboard">
+    <button class="key" data-key="Q">Q</button>
+    <button class="key" data-key="W">W</button>
+    <button class="key" data-key="E">E</button>
+    <button class="key" data-key="R">R</button>
+    <button class="key" data-key="T">T</button>
+    <button class="key" data-key="Y">Y</button>
+    <button class="key" data-key="U">U</button>
+    <button class="key" data-key="I">I</button>
+    <button class="key" data-key="O">O</button>
+    <button class="key" data-key="P">P</button>
+    <div class="space"></div>
+    <button class="key" data-key="A">A</button>
+    <button class="key" data-key="S">S</button>
+    <button class="key" data-key="D">D</button>
+    <button class="key" data-key="F">F</button>
+    <button class="key" data-key="G">G</button>
+    <button class="key" data-key="H">H</button>
+    <button class="key" data-key="J">J</button>
+    <button class="key" data-key="K">K</button>
+    <button class="key" data-key="L">L</button>
+    <div class="space"></div>
+    <button data-enter class="key large">Enter</button>
+    <button class="key" data-key="Z">Z</button>
+    <button class="key" data-key="X">X</button>
+    <button class="key" data-key="C">C</button>
+    <button class="key" data-key="V">V</button>
+    <button class="key" data-key="B">B</button>
+    <button class="key" data-key="N">N</button>
+    <button class="key" data-key="M">M</button>
+    <button data-delete class="key large">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+        <path fill="var(--color-tone-1)"
+          d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z">
+        </path>
+      </svg>
+    </button>
+  </div>
+  <div class="end-game-container hide" data-end-game>
+    <div class="end-game-modal">
+      <h2 class="end-game-title" data-end-game-title></h2>
+      <div class="target-word-display" data-target-word-display></div>
+      <div class="end-game-hint" data-end-game-hint></div>
+      <div class="solve-time" data-solve-time></div>
+      <div class="score" data-score></div>
+      <button class="share-btn" data-share-btn>⬆️ Share</button>
+      
+      <button class="share-btn" id="endgame-archive-btn"
+        style="background-color: #8b0000; font-size: 1.1rem; padding: 8px 16px; margin-top: 6px; color: #ffffff">📜 Play Past Wordles</button>
+      
+      <h3 class="h3">Next Word In</h3>
+      <div class="timer" data-timer>00:00:00</div>
+    </div>
+  </div>
+</body>
+
+</html>

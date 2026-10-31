@@ -1,2 +1,3 @@
-CATAN,Fortune favors the negotiator
+CATAN,The desert hides a troublesome visitor
+HITLER,Every government is a gamble
 BARON,Evil grows, and the town grows stranger

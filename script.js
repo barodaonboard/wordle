@@ -313,35 +313,18 @@ function setupModals() {
   }
 }
 
-
 function populateArchiveList() {
   const archiveList = document.getElementById('archive-list');
   archiveList.innerHTML = '';
 
   const nowMs = Date.now();
 
-  // Number of days since the launch date
-  const daysSinceLaunch = getAbsoluteDayIndex(nowMs);
-
-  // Show only dates from launch day onwards
-  const totalDays = Math.max(0, daysSinceLaunch) + 1;
-
-  for (let i = 0; i < totalDays; i++) {
+  for (let i = 0; i < 34; i++) {
     const targetMs = nowMs - i * 86400000;
     const isToday = i === 0;
 
-    const dateText = new Date(targetMs).toLocaleDateString(
-      'en-IN',
-      {
-        timeZone: 'Asia/Kolkata',
-        day: 'numeric',
-        month: 'long'
-      }
-    );
-
-    const dayLabel = isToday
-      ? 'Today'
-      : (i === 1 ? 'Yesterday' : `${i} days ago`);
+    const dateText = new Date(targetMs).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long' });
+    const dayLabel = isToday ? 'Today' : (i === 1 ? 'Yesterday' : `${i} days ago`);
 
     const item = document.createElement('a');
     item.href = isToday ? '.' : `?offset=${i}`;
@@ -355,7 +338,6 @@ function populateArchiveList() {
     archiveList.appendChild(item);
   }
 }
-
 
 
 function startInteraction() {
@@ -707,7 +689,7 @@ function generateShareText(isWin) {
   const day = puzzleDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric' });
   const month = puzzleDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', month: 'long' });
 
-  const header = `BPGC Wordle - ${day} ${month}`;
+  const header = `BoB Wordle - ${day} ${month}`;
   let scoreLine = '';
   if (isWin) {
     scoreLine = `🏆 Score: ${calculateScore(isWin, guessCount)}`;

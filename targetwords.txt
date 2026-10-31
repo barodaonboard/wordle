@@ -1,1 +1,2 @@
 CATAN,Fortune favors the negotiator
+BARON,Evil grows, and the town grows stranger

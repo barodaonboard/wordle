@@ -30,6 +30,62 @@ let gameElapsedMs = 0;
 let liveTimerInterval = null;
 let hintUsed = false;
 
+// ---- GA4 GAMEPLAY ANALYTICS ----
+// A game is counted when the player submits their first valid guess.
+// One start, completion, score, and hint event are sent per browser/puzzle.
+
+function getAnalyticsPuzzleDetails() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const rawOffset = Number.parseInt(urlParams.get('offset') || '0', 10);
+  const offset = Number.isFinite(rawOffset) && rawOffset > 0 ? rawOffset : 0;
+  const puzzleDate = new Date(Date.now() - offset * 86400000);
+
+  const dateParts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(puzzleDate);
+
+  const dateValues = {};
+  dateParts.forEach(part => {
+    if (part.type !== 'literal') dateValues[part.type] = part.value;
+  });
+
+  return {
+    puzzle_date: `${dateValues.year}-${dateValues.month}-${dateValues.day}`,
+    puzzle_mode: offset > 0 ? 'archive' : 'daily',
+    word_length: wordLength
+  };
+}
+
+function trackGameAnalyticsOnce(eventName, parameters = {}) {
+  const markerKey = `bob_wordle_ga4_${eventName}_${getLocalStateKey()}`;
+
+  // The gtag function is defined in index.html and queues events even while
+  // the Google Analytics library is still loading.
+  if (typeof window.gtag !== 'function') return false;
+
+  try {
+    if (localStorage.getItem(markerKey) === '1') return false;
+  } catch (error) {
+    console.warn('Could not read analytics marker:', error);
+  }
+
+  window.gtag('event', eventName, {
+    ...getAnalyticsPuzzleDetails(),
+    ...parameters
+  });
+
+  try {
+    localStorage.setItem(markerKey, '1');
+  } catch (error) {
+    console.warn('Could not save analytics marker:', error);
+  }
+
+  return true;
+}
+
 async function fetchWords() {
   try {
     const targetResponse = await fetch('targetwords.txt', { cache: 'no-cache' });
@@ -266,6 +322,9 @@ function loadGameState() {
       showTimer(state.status === 'WON');
     } else {
       if (state.gameStartTime) {
+        trackGameAnalyticsOnce('level_start', {
+          level_name: getAnalyticsPuzzleDetails().puzzle_date
+        });
         startLiveTimer();
       }
       startInteraction();
@@ -441,9 +500,12 @@ function submitGuess() {
     return;
   }
 
-  // Start the solve timer on first valid submission
+  // Start the solve timer and count the play on the first valid submission
   if (!gameStartTime) {
     gameStartTime = Date.now();
+    trackGameAnalyticsOnce('level_start', {
+      level_name: getAnalyticsPuzzleDetails().puzzle_date
+    });
     startLiveTimer();
   }
 
@@ -548,13 +610,27 @@ function checkWinLose(guess, tiles) {
   const remainingTiles = getUnusedTiles();
   const attempts = tries - (remainingTiles.length / wordLength);
 
+  // PLAYER WINS
   if (guess === targetWord) {
     gameElapsedMs = Date.now() - (gameStartTime || Date.now());
+    const finalScore = calculateScore(true, attempts);
+
+    trackGameAnalyticsOnce('level_end', {
+      level_name: getAnalyticsPuzzleDetails().puzzle_date,
+      success: true,
+      result: 'win',
+      guess_count: attempts,
+      time_seconds: Math.floor(gameElapsedMs / 1000),
+      hint_used: hintUsed ? 'yes' : 'no'
+    });
+
+    trackGameAnalyticsOnce('post_score', {
+      score: finalScore
+    });
+
     stopLiveTimer();
     disableHintButton();
     saveGameState('WON');
-    
-
 
     showAlert('You Win!', 5000);
     stopInteraction();
@@ -562,13 +638,22 @@ function checkWinLose(guess, tiles) {
     return;
   }
 
+  // PLAYER LOSES AFTER USING ALL SIX GUESSES
   if (remainingTiles.length === 0) {
     gameElapsedMs = Date.now() - (gameStartTime || Date.now());
+
+    trackGameAnalyticsOnce('level_end', {
+      level_name: getAnalyticsPuzzleDetails().puzzle_date,
+      success: false,
+      result: 'loss',
+      guess_count: attempts,
+      time_seconds: Math.floor(gameElapsedMs / 1000),
+      hint_used: hintUsed ? 'yes' : 'no'
+    });
+
     stopLiveTimer();
     disableHintButton();
     saveGameState('LOST');
-
-
 
     showAlert(targetWord.toUpperCase(), null);
     stopInteraction();
@@ -605,6 +690,8 @@ function updateHintButtonState() {
 function useHint() {
   if (hintUsed) return;
   hintUsed = true;
+
+  trackGameAnalyticsOnce('hint_used');
 
   const hintBtn = document.getElementById('hint-btn');
   const hintDisplay = document.getElementById('hint-display');

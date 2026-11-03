@@ -3,3 +3,4 @@ HITLER,Every government is a gamble
 BARON,Evil grows, and the town grows stranger
 MAHJONG,A chow, a pung, a kong
 MEEPLE,Wooden wanderer
+GIZMOS,Engine fuelled by marbles

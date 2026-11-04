@@ -625,7 +625,10 @@ function checkWinLose(guess, tiles) {
     });
 
     trackGameAnalyticsOnce('post_score', {
-      score: finalScore
+      score: finalScore,
+      // Text copy for sorting individual score values in the GA4 leaderboard.
+      // Zero-padding keeps alphabetical order aligned with numeric order.
+      score_value: String(finalScore).padStart(4, '0')
     });
 
     stopLiveTimer();

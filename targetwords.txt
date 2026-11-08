@@ -7,3 +7,4 @@ GIZMOS,Engine fuelled by marbles
 SKULL, Not every flower is safe
 EARTH,Let biodiversity flourish
 SHASN,Ideology shapes power
+NIGIRI, Egg, Squid and Salmon

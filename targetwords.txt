@@ -11,3 +11,4 @@ NIGIRI, Egg, Squid and Salmon
 QUEST,Not everyone wants success
 CELLAR,Wine's waiting room
 SETUP,The game before the game
+STEAL, A Captain's favourite move

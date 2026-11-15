@@ -1,14 +1,1 @@
-CATAN,The desert hides a troublesome visitor
-HITLER,Every government is a gamble
-BARON,Evil grows, and the town grows stranger
-MAHJONG,A chow, a pung, a kong
-MEEPLE,Wooden wanderer
-GIZMOS,Engine fuelled by marbles
-SKULL, Not every flower is safe
-EARTH,Let biodiversity flourish
-SHASN,Ideology shapes power
-NIGIRI, Egg, Squid and Salmon
-QUEST,Not everyone wants success
-CELLAR,Wine's waiting room
-SETUP,The game before the game
-STEAL, A Captain's favourite move
+CAMEL, A race on borrowed backs

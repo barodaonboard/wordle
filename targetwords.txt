@@ -3,3 +3,5 @@ DOBBLE, Only one thing in common
 PIZZA, Taco Cat Goat Cheese _____
 CHECK, Danger to the crown
 SCORE,Victory has a value
+SCOUT, A hand you cannot change
+JENGA, The art of balancing
